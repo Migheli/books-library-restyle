@@ -30,7 +30,6 @@ def get_filename(book_url, book_id):
 
 
 
-
 def download_txt(url, filename, folder='books/'):
 
     sanitized_filename = f'{sanitize_filename(filename)}.txt'
@@ -59,6 +58,11 @@ def download_img(book_url, folder='img/'):
 
 
     path = os.path.join(folder, sanitized_filename)
+    comments = soup.find_all('div', class_='texts')
+    if comments:
+        for comment in comments:
+            comment_text = comment.find('span', class_='black').text
+            print(comment_text)
 
     with open(path, 'wb') as file:
         file.write(response.content)
