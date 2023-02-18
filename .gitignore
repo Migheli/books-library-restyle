@@ -151,7 +151,7 @@ cython_debug/
 
 #ignore imgs
 *.jpg
-
+*.gif
 
 
 # PyCharm
