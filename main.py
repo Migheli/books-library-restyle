@@ -15,7 +15,6 @@ def check_for_redirect(response):
 
 
 def parse_book_page(soup):
-
     title_tag = soup.find('td', class_='ow_px_td').find('h1')
     title_text, author = title_tag.text.split('::')
     title = title_text.strip()
@@ -51,7 +50,6 @@ def download_txt(title, id, folder='books/'):
 
 
 def download_img(img_url, folder='img/'):
-
     response = requests.get(img_url)
     response.raise_for_status()
     sanitized_filename = unquote(urlsplit(img_url).path)
@@ -78,24 +76,20 @@ def main():
     parser.add_argument('-e', '--end_id', type=int, help='ID финальной книги', default=11)
     args = parser.parse_args()
 
-    START_ID = args.start_id
-    END_ID = args.end_id + 1
-
     urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
     os.makedirs(('books'), exist_ok=True)
     os.makedirs(('img'), exist_ok=True)
 
-
-    for id in range(START_ID, END_ID):
+    for book_id in range(args.start_id, args.end_id):
         try:
-            book_url = f'https://tululu.org/b{id}/'
+            book_url = f'https://tululu.org/b{book_id}/'
             soup = get_book_page_soup(book_url)
             book_info = parse_book_page(soup)
             download_img(urljoin(book_url, book_info['img_src']))
-            download_txt(book_info['title'], id)
+            download_txt(book_info['title'], book_id)
 
         except HTTPError:
-            print(f'Ошибка при скачивании книги с id {id}. Пропускаем.')
+            print(f'Ошибка при скачивании книги с id {book_id}. Пропускаем.')
 
 
 if __name__ == "__main__":
