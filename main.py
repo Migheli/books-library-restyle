@@ -58,11 +58,17 @@ def download_img(book_url, folder='img/'):
 
 
     path = os.path.join(folder, sanitized_filename)
-    comments = soup.find_all('div', class_='texts')
-    if comments:
-        for comment in comments:
-            comment_text = comment.find('span', class_='black').text
-            print(comment_text)
+    #comments = soup.find_all('div', class_='texts')
+    #if comments:
+    #    for comment in comments:
+    #        comment_text = comment.find('span', class_='black').text
+    #        print(comment_text)
+
+    genres = soup.find('span', class_='d_book')
+    genres = genres.find_all('a')
+    for genre in genres:
+        genre_name = genre.text
+        print(genre_name)
 
     with open(path, 'wb') as file:
         file.write(response.content)
