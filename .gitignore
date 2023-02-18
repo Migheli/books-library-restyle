@@ -149,6 +149,7 @@ idea/
 books/
 img/
 
+*.svg
 
 # PyCharm
 #  JetBrains specific template is maintainted in a separate JetBrains.gitignore that can
