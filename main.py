@@ -14,16 +14,15 @@ def check_for_redirect(response):
         raise HTTPError
 
 
-def parse_book_page(html_content):
+def parse_book_page(soup):
 
-    soup = BeautifulSoup(html_content.text, 'lxml')
     title_tag = soup.find('td', class_='ow_px_td').find('h1')
     title_text, author = title_tag.text.split('::')
     title = title_text.strip()
 
-    genres_span = soup.find('span', class_='d_book')
-    genres_tags = genres_span.find_all('a')
-    genre_names = [genre.text for genre in genres_tags]
+    genre_span = soup.find('span', class_='d_book')
+    genre_tags = genre_span.find_all('a')
+    genre_names = [genre.text for genre in genre_tags]
 
     img_src = soup.find('div', class_='bookimage').find('img')['src']
 
@@ -63,6 +62,13 @@ def download_img(img_url, folder='img/'):
         file.write(response.content)
 
 
+def get_book_page_soup(book_url):
+    response = requests.get(book_url, verify=False)
+    response.raise_for_status()
+    check_for_redirect(response)
+    return BeautifulSoup(response.text, 'lxml')
+
+
 def main():
 
     parser = argparse.ArgumentParser(
@@ -83,18 +89,10 @@ def main():
     for id in range(START_ID, END_ID):
         try:
             book_url = f'https://tululu.org/b{id}/'
-
-            response = requests.get(book_url, verify=False)
-            response.raise_for_status()
-            check_for_redirect(response)
-
-            book_info = parse_book_page(response)
+            soup = get_book_page_soup(book_url)
+            book_info = parse_book_page(soup)
             download_img(urljoin(book_url, book_info['img_src']))
             download_txt(book_info['title'], id)
-
-            #print(f'Скачана книга - {book_info["title"]} ')
-            #print(f'Жанр: {book_info["genres"]}')
-            #print(f'Комментарии к книге: {book_info["comments"]}')
 
         except HTTPError:
             print(f'Ошибка при скачивании книги с id {id}. Пропускаем.')
