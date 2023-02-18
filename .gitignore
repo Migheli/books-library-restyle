@@ -146,12 +146,8 @@ cython_debug/
 
 .idea/
 
-#ignore text files
-*.txt
-
-#ignore imgs
-*.jpg
-*.gif
+books/
+img/
 
 
 # PyCharm
