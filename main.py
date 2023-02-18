@@ -1,3 +1,4 @@
+import argparse
 import os
 import requests
 import urllib3
@@ -64,24 +65,36 @@ def download_img(img_url, folder='img/'):
 
 def main():
 
+    parser = argparse.ArgumentParser(
+        description='Программа скачивает файлы из библиотеки tululu.ru'
+    )
+    parser.add_argument('-s', '--start_id', type=int, help='ID стартовой книги', default=1)
+    parser.add_argument('-e', '--end_id', type=int, help='ID финальной книги', default=11)
+    args = parser.parse_args()
+
+    START_ID = args.start_id
+    END_ID = args.end_id + 1
+
     urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
     os.makedirs(('books'), exist_ok=True)
     os.makedirs(('img'), exist_ok=True)
 
-    for id in range(1, 11):
+
+    for id in range(START_ID, END_ID):
         try:
             book_url = f'https://tululu.org/b{id}/'
+
             response = requests.get(book_url, verify=False)
             response.raise_for_status()
-            print(response.history)
             check_for_redirect(response)
+
             book_info = parse_book_page(response)
-            img_url = urljoin(book_url, book_info['img_src'])
-            download_img(img_url)
+            download_img(urljoin(book_url, book_info['img_src']))
             download_txt(book_info['title'], id)
-            print(f'Скачана книга - {book_info["title"]} ')
-            print(f'Жанр: {book_info["genres"]}')
-            print(f'Комментарии к книге: {book_info["comments"]}')
+
+            #print(f'Скачана книга - {book_info["title"]} ')
+            #print(f'Жанр: {book_info["genres"]}')
+            #print(f'Комментарии к книге: {book_info["comments"]}')
 
         except HTTPError:
             print(f'Ошибка при скачивании книги с id {id}. Пропускаем.')
