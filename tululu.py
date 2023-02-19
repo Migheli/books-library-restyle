@@ -84,9 +84,9 @@ def main():
         try:
             book_url = f'https://tululu.org/b{book_id}/'
             soup = get_book_page_soup(book_url)
-            book_info = parse_book_page(soup)
-            download_img(urljoin(book_url, book_info['img_src']))
-            download_txt(book_info['title'], book_id)
+            book = parse_book_page(soup)
+            download_img(urljoin(book_url, book['img_src']))
+            download_txt(book['title'], book_id)
 
         except HTTPError:
             print(f'Ошибка при скачивании книги с id {book_id}. Пропускаем.')
