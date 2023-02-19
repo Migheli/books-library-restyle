@@ -37,12 +37,12 @@ def parse_book_page(soup):
 
 
 def download_txt(title, id, folder='books/'):
-    url = f'https://tululu.org/txt.php?id={id}'
-    sanitized_filename = f'{id} {sanitize_filename(title)}.txt'
-    path = os.path.join(folder, sanitized_filename)
-    response = requests.get(url, verify=False)
+    payload = {'id': id}
+    response = requests.get('https://tululu.org/txt.php', params=payload, verify=False)
     response.raise_for_status()
     check_for_redirect(response)
+    sanitized_filename = f'{id} {sanitize_filename(title)}.txt'
+    path = os.path.join(folder, sanitized_filename)
     with open(path, 'w') as file:
         file.write(response.text)
 
