@@ -26,9 +26,7 @@ def parse_book_page(soup):
     img_src = soup.find('div', class_='bookimage').find('img')['src']
 
     comment_tags = soup.find_all('div', class_='texts')
-    comments = None
-    if comment_tags:
-        comments = [comment.find('span', class_='black').text for comment in comment_tags]
+    comments = [comment.find('span', class_='black').text for comment in comment_tags]
 
     return {
                 'title': title,
