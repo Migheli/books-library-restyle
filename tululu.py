@@ -85,8 +85,8 @@ def main():
     parser.add_argument('-e', '--end_id', type=int, help='ID финальной книги', default=11)
     args = parser.parse_args()
 
-    os.makedirs(('books'), exist_ok=True)
-    os.makedirs(('img'), exist_ok=True)
+    os.makedirs('books', exist_ok=True)
+    os.makedirs('img', exist_ok=True)
 
     for book_id in range(args.start_id, args.end_id):
         try:
@@ -99,7 +99,7 @@ def main():
         except HTTPError:
             print(f'Ошибка при скачивании книги с id {book_id}. Пропускаем.')
         except ConnectionError:
-            print(f'Ошибка соединения. Пробуем еще раз.')
+            print('Ошибка соединения. Пробуем еще раз.')
 
 if __name__ == "__main__":
     main()
