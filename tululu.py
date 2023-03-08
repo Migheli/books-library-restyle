@@ -60,8 +60,8 @@ def download_img(img_url, session, folder='img/'):
         file.write(response.content)
 
 
-def get_book_page_soup(book_url, session):
-    response = session.get(book_url, verify=False)
+def get_page_soup(url, session):
+    response = session.get(url, verify=False)
     response.raise_for_status()
     check_for_redirect(response)
     return BeautifulSoup(response.text, 'lxml')
@@ -91,7 +91,7 @@ def main():
     for book_id in range(args.start_id, args.end_id):
         try:
             book_url = f'https://tululu.org/b{book_id}/'
-            soup = get_book_page_soup(book_url, session)
+            soup = get_page_soup(book_url, session)
             book = parse_book_page(soup)
             download_img(urljoin(book_url, book['img_src']), session)
             download_txt(book['title'], book_id, session)
