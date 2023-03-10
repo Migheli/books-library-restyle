@@ -41,9 +41,9 @@ def main():
             total_links += book_links
 
         except HTTPError:
-            print(f'Error during handle page number {page}. Skip it.')
+            print(f'Error during handle page number {page}. Page skipped.')
         except ConnectionError:
-            print('Connection error. Try one more time.')
+            print('Connection error. Retry...')
 
     print(total_links)
 if __name__ == "__main__":
