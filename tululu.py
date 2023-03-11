@@ -17,18 +17,18 @@ def check_for_redirect(response):
 
 
 def parse_book_page(soup):
-    title_tag = soup.find('td', class_='ow_px_td').find('h1')
+    title_tag = soup.select_one('td.ow_px_td h1')
+
     title_text, author = title_tag.text.split('::')
     title = title_text.strip()
 
-    genre_span = soup.find('span', class_='d_book')
-    genre_tags = genre_span.find_all('a')
+    genre_tags = soup.select('span.d_book a')
     genre_names = [genre.text for genre in genre_tags]
 
-    img_src = soup.find('div', class_='bookimage').find('img')['src']
+    img_src = soup.select_one('div.bookimage img')['src']
 
-    comment_tags = soup.find_all('div', class_='texts')
-    comments = [comment.find('span', class_='black').text for comment in comment_tags]
+    comment_tags = soup.select('div.texts')
+    comments = [comment.select_one('span.black').text for comment in comment_tags]
 
     return {
                 'title': title,

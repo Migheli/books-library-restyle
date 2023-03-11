@@ -38,10 +38,15 @@ def main():
         try:
             target_url = f'https://tululu.org/l55/{page}'
             soup = get_page_soup(target_url, session)
-            book_cards = soup.find_all('table', class_='d_book')
+            #book_cards = soup.find_all('table', class_='d_book')
+
+            book_cards_selector = ' .d_book .bookimage a'
+            book_cards = soup.select(book_cards_selector)
+
 
             base_url = 'https://tululu.org/'
-            book_links = [urljoin(base_url, book_card.find('a').get('href')) for book_card in book_cards]
+            book_links = [urljoin(base_url, book_card.get('href')) for book_card in book_cards]
+            print(book_links)
             all_book_links += book_links
 
         except HTTPError:
