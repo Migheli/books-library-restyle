@@ -33,7 +33,7 @@ def main():
     parser.add_argument('-s', '--start_page', type=int, help='number of the first processed page',
                         default=1)
     parser.add_argument('-e', '--end_page', type=int, help='number of the last processed page',
-                        default=args.start_page)
+                        default=5)
     args = parser.parse_args()
     urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
