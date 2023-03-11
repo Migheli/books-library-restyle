@@ -24,26 +24,30 @@ def main():
     )
     session = requests.Session()
     session.mount('https://', HTTPAdapter(max_retries=retry_strategy))
+    urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
     parser = argparse.ArgumentParser(
         description='Program download books from free online-library tululu.org'
     )
+
+    parser.add_argument('-s', '--start_page', type=int, help='number of the first processed page',
+                        default=1)
+    parser.add_argument('-e', '--end_page', type=int, help='number of the last processed page',
+                        default=args.start_page)
+    args = parser.parse_args()
     urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
     os.makedirs('books', exist_ok=True)
     os.makedirs('img', exist_ok=True)
 
+
     all_book_links = []
-    for page in range(1, 6):
+
+    for page in range(args.start_page, args.end_page):
         try:
             target_url = f'https://tululu.org/l55/{page}'
             soup = get_page_soup(target_url, session)
-            #book_cards = soup.find_all('table', class_='d_book')
-
-            book_cards_selector = ' .d_book .bookimage a'
-            book_cards = soup.select(book_cards_selector)
-
-
+            book_cards = soup.select(' .d_book .bookimage a')
             base_url = 'https://tululu.org/'
             book_links = [urljoin(base_url, book_card.get('href')) for book_card in book_cards]
             print(book_links)
