@@ -74,9 +74,8 @@ def main():
         except ConnectionError:
             print('Connection error. Retrying...')
 
-    books_json = json.dumps(books, ensure_ascii=False)
     with open(f'{os.path.normpath(args.json_path)}.json', 'w') as books_file:
-        books_file.write(books_json)
+        json.dump(books, books_file, ensure_ascii=False)
 
 
 if __name__ == "__main__":
