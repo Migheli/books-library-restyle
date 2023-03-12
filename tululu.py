@@ -31,22 +31,24 @@ def parse_book_page(soup):
     comment_tags = soup.select('.texts')
     comments = [comment.select_one('span.black').text for comment in comment_tags]
 
+    path = os.path.join('books', f'{sanitize_filename(title)}.txt')
+
     return {
                 'title': title,
                 'author': author,
+                'path': path,
                 'genres': genre_names,
                 'img_src': img_src,
-                'comments': comments,
+                'comments': comments
             }
 
 
-def download_txt(title, id, session, folder='books/'):
+
+def download_txt(id, session, path):
     payload = {'id': id}
     response = session.get('https://tululu.org/txt.php', params=payload, verify=False)
     response.raise_for_status()
     check_for_redirect(response)
-    sanitized_filename = f'{id} {sanitize_filename(title)}.txt'
-    path = os.path.join(folder, sanitized_filename)
     with open(path, 'w') as file:
         file.write(response.text)
 

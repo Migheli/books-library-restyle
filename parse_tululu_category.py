@@ -15,8 +15,8 @@ from tululu import check_for_redirect, get_page_soup, parse_book_page, \
     download_img, download_txt
 
 
-
 def main():
+    urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
     retry_strategy = Retry(
         total=5,
@@ -24,25 +24,25 @@ def main():
     )
     session = requests.Session()
     session.mount('https://', HTTPAdapter(max_retries=retry_strategy))
-    urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
     parser = argparse.ArgumentParser(
         description='Program download books from free online-library tululu.org'
     )
-
-    parser.add_argument('-s', '--start_page', type=int, help='number of the first processed page',
+    parser.add_argument('-sp', '--start_page', type=int, help='number of the first processed page',
                         default=1)
-    parser.add_argument('-e', '--end_page', type=int, help='number of the last processed page',
-                        default=5)
+    parser.add_argument('-ep', '--end_page', type=int, help='number of the last processed page',
+                        default=2)
+    parser.add_argument('-df', '--destfolder', type=str,
+                        help='folder for saving parser results', default=os.getcwd())
+    parser.add_argument('-jp', '--jsonpath', type=str,
+                        help='path for saving and json file name', default='books')
+    parser.add_argument('-di', '--downloadimg', action=argparse.BooleanOptionalAction,
+                        help='boolean value for saving book imgs', default=True)
+    parser.add_argument('-dt', '--downloadtext', action=argparse.BooleanOptionalAction,
+                        help='boolean value for saving book texts', default=True)
     args = parser.parse_args()
-    urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
-
-    os.makedirs('books', exist_ok=True)
-    os.makedirs('img', exist_ok=True)
-
 
     all_book_links = []
-
     for page in range(args.start_page, args.end_page):
         try:
             target_url = f'https://tululu.org/l55/{page}'
@@ -52,25 +52,26 @@ def main():
             book_links = [urljoin(base_url, book_card.get('href')) for book_card in book_cards]
             print(book_links)
             all_book_links += book_links
-
         except HTTPError:
-            print(f'Error during handle page number {page}. Page skipped.')
+            print(f'Error while handling page number {page}. Page skipped.')
         except ConnectionError:
             print('Connection error. Retry...')
 
-    print(len(all_book_links))
     books = []
 
     for book_link in all_book_links:
+        os.chdir(os.path.normpath(args.destfolder))
+        prefix, book_id = urlparse(book_link).path.replace('/', '').split('b')
+        print(book_id)
+        soup = get_page_soup(book_link, session)
+        book = parse_book_page(soup)
         try:
-            prefix, book_id = urlparse(book_link).path.replace('/', '').split('b')
-            print(book_id)
-            soup = get_page_soup(book_link, session)
-            book = parse_book_page(soup)
-
-            print(f'book === {book}')
-            download_img(urljoin(book_link, book['img_src']), session)
-            download_txt(book['title'], book_id, session)
+            if args.downloadtext:
+                os.makedirs('books', exist_ok=True)
+                download_txt(book_id, session, book['path'])
+            if args.downloadimg:
+                os.makedirs('img', exist_ok=True)
+                download_img(urljoin(book_link, book['img_src']), session)
             books.append(book)
         except HTTPError:
             print(f'Error while handling book with id {book_id}. Skipping download.')
@@ -78,11 +79,8 @@ def main():
             print('Connection error. Retrying...')
 
     books_json = json.dumps(books, ensure_ascii=False)
-    with open('books.json', 'w') as books_file:
+    with open(f'{os.path.normpath(args.jsonpath)}.json', 'w') as books_file:
         books_file.write(books_json)
-
-
-
 
 if __name__ == "__main__":
     main()
