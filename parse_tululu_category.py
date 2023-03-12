@@ -30,14 +30,14 @@ def main():
                         default=1)
     parser.add_argument('-ep', '--end_page', type=int, help='number of the last processed page',
                         default=2)
-    parser.add_argument('-df', '--destfolder', type=str,
+    parser.add_argument('-df', '--dest_folder', type=str,
                         help='folder for saving parser results', default=os.getcwd())
-    parser.add_argument('-jp', '--jsonpath', type=str,
-                        help='path for saving and json file name', default='books')
-    parser.add_argument('-di', '--downloadimg', action=argparse.BooleanOptionalAction,
-                        help='boolean value for saving book imgs', default=True)
-    parser.add_argument('-dt', '--downloadtext', action=argparse.BooleanOptionalAction,
-                        help='boolean value for saving book texts', default=True)
+    parser.add_argument('-jp', '--json_path', type=str,
+                        help='if active book texts not downloading', default='books')
+    parser.add_argument('-si', '--skip_imgs', action=argparse.BooleanOptionalAction, default=False,
+                        help='if active book imgs not downloading')
+    parser.add_argument('-st', '--skip_txt', action=argparse.BooleanOptionalAction, default=False,
+                        help='boolean value for saving book texts')
     args = parser.parse_args()
 
     all_book_links = []
@@ -57,15 +57,15 @@ def main():
     books = []
 
     for book_link in all_book_links:
-        os.chdir(os.path.normpath(args.destfolder))
+        os.chdir(os.path.normpath(args.dest_folder))
         prefix, book_id = urlparse(book_link).path.replace('/', '').split('b')
         soup = get_page_soup(book_link, session)
         book = parse_book_page(soup)
         try:
-            if args.downloadtext:
+            if not args.skip_txt:
                 os.makedirs('books', exist_ok=True)
                 download_txt(book_id, session, book['path'])
-            if args.downloadimg:
+            if not args.skip_imgs:
                 os.makedirs('img', exist_ok=True)
                 download_img(urljoin(book_link, book['img_src']), session)
             books.append(book)
@@ -75,7 +75,7 @@ def main():
             print('Connection error. Retrying...')
 
     books_json = json.dumps(books, ensure_ascii=False)
-    with open(f'{os.path.normpath(args.jsonpath)}.json', 'w') as books_file:
+    with open(f'{os.path.normpath(args.json_path)}.json', 'w') as books_file:
         books_file.write(books_json)
 
 
