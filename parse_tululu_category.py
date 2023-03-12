@@ -35,9 +35,9 @@ def main():
     parser.add_argument('-jp', '--json_path', type=str,
                         help='path to json file with parsing results (without .json extension)',
                         default='books')
-    parser.add_argument('-si', '--skip_imgs', action=argparse.BooleanOptionalAction, default=False,
+    parser.add_argument('-si', '--skip_imgs', action='store_true',
                         help='if this flag is active, images of books are not loaded')
-    parser.add_argument('-st', '--skip_txt', action=argparse.BooleanOptionalAction, default=False,
+    parser.add_argument('-st', '--skip_txt', action='store_true',
                         help='if this flag is active, texts of books are not loaded')
     args = parser.parse_args()
 
