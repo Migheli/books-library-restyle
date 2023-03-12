@@ -98,7 +98,7 @@ def main():
             soup = get_page_soup(book_url, session)
             book = parse_book_page(soup)
             download_img(urljoin(book_url, book['img_src']), session)
-            download_txt(book['title'], book_id, session)
+            download_txt(book_id, session, book['path'])
 
         except HTTPError:
             print(f'Ошибка при скачивании книги с id {book_id}. Пропускаем.')

@@ -50,7 +50,6 @@ def main():
             book_cards = soup.select(' .d_book .bookimage a')
             base_url = 'https://tululu.org/'
             book_links = [urljoin(base_url, book_card.get('href')) for book_card in book_cards]
-            print(book_links)
             all_book_links += book_links
         except HTTPError:
             print(f'Error while handling page number {page}. Page skipped.')
