@@ -4,14 +4,12 @@ import os
 import requests
 import urllib3
 
-from bs4 import BeautifulSoup
-from pathvalidate import sanitize_filename
 from requests.exceptions import HTTPError, ConnectionError
 from requests.adapters import HTTPAdapter
 from requests.packages.urllib3.util.retry import Retry
-from urllib.parse import unquote, urljoin, urlsplit, urlparse
+from urllib.parse import urljoin, urlparse
 
-from tululu import check_for_redirect, get_page_soup, parse_book_page, \
+from tululu import get_page_soup, parse_book_page, \
     download_img, download_txt
 
 
@@ -61,7 +59,6 @@ def main():
     for book_link in all_book_links:
         os.chdir(os.path.normpath(args.destfolder))
         prefix, book_id = urlparse(book_link).path.replace('/', '').split('b')
-        print(book_id)
         soup = get_page_soup(book_link, session)
         book = parse_book_page(soup)
         try:
@@ -80,6 +77,7 @@ def main():
     books_json = json.dumps(books, ensure_ascii=False)
     with open(f'{os.path.normpath(args.jsonpath)}.json', 'w') as books_file:
         books_file.write(books_json)
+
 
 if __name__ == "__main__":
     main()

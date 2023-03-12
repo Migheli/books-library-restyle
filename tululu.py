@@ -40,8 +40,7 @@ def parse_book_page(soup):
                 'genres': genre_names,
                 'img_src': img_src,
                 'comments': comments
-            }
-
+           }
 
 
 def download_txt(id, session, path):
@@ -104,6 +103,7 @@ def main():
             print(f'Ошибка при скачивании книги с id {book_id}. Пропускаем.')
         except ConnectionError:
             print('Ошибка соединения. Пробуем еще раз.')
+
 
 if __name__ == "__main__":
     main()
