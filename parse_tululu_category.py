@@ -33,11 +33,12 @@ def main():
     parser.add_argument('-df', '--dest_folder', type=str,
                         help='folder for saving parser results', default=os.getcwd())
     parser.add_argument('-jp', '--json_path', type=str,
-                        help='if active book texts not downloading', default='books')
+                        help='path to json file with parsing results (without .json extension)',
+                        default='books')
     parser.add_argument('-si', '--skip_imgs', action=argparse.BooleanOptionalAction, default=False,
-                        help='if active book imgs not downloading')
+                        help='if this flag is active, images of books are not loaded')
     parser.add_argument('-st', '--skip_txt', action=argparse.BooleanOptionalAction, default=False,
-                        help='boolean value for saving book texts')
+                        help='if this flag is active, texts of books are not loaded')
     args = parser.parse_args()
 
     all_book_links = []
